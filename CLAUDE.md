@@ -12,7 +12,15 @@
 - 화면: HTML / CSS / JavaScript (빌드 도구 없음) → GitHub Pages로 호스팅
 - 인증·DB: Supabase (프로젝트 ref: `lzqolvrpppiftgyfufey`, 서울 리전)
 - 결제 승인: Supabase Edge Function `confirm-payment`
-- 결제: 토스페이먼츠 결제창 SDK v2, 토스 공식 문서의 공개 테스트 키
+- 결제: 토스페이먼츠 결제창 SDK v2
+  - ⚠️ 현재 넣어둔 토스 문서용 공용 테스트 키는 토스가 거절함(401 UNAUTHORIZED_KEY) → 결제창이 열리지 않음
+  - 해결: 토스 개발자센터의 "API 개별 연동 키"(test_ck_ / test_sk_)로 교체 필요
+    - 클라이언트 키 → `js/config.js`의 `TOSS_CLIENT_KEY`
+    - 시크릿 키 → Supabase Secrets `TOSS_SECRET_KEY`
+
+## 접속 주소
+- 사이트: https://magenta30385-droid.github.io/goods-shop/
+- 저장소: https://github.com/magenta30385-droid/goods-shop
 
 ## 페이지
 | 파일 | 내용 |

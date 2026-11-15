@@ -18,6 +18,7 @@
 goods-shop/
 ├─ index.html, login.html, orders.html, admin.html, success.html, fail.html
 ├─ css/style.css          공통 스타일
+├─ images/*.svg           상품 이미지 (products.image_url 에서 상대경로로 참조)
 ├─ js/config.js           Supabase URL, anon 키, 토스 클라이언트 키, 관리자 이메일 (공개 값만)
 ├─ js/common.js           Supabase 연결(sb), getUser, requireLogin, isAdmin, won, renderNav
 └─ supabase/
