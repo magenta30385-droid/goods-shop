@@ -56,9 +56,9 @@ create policy "본인 주문 생성" on orders for insert to authenticated
 -- 샘플 상품
 insert into products (name, price, image_url, description)
 select * from (values
-  ('로고 머그컵', 12000, 'https://picsum.photos/seed/mug/400/300', '매일 쓰기 좋은 머그컵'),
-  ('에코백', 15000, 'https://picsum.photos/seed/bag/400/300', '튼튼한 캔버스 에코백'),
-  ('스티커 세트', 3000, 'https://picsum.photos/seed/sticker/400/300', '노트북에 붙이기 좋은 스티커 6종'),
-  ('반팔 티셔츠', 25000, 'https://picsum.photos/seed/tshirt/400/300', '면 100% 반팔 티셔츠')
+  ('로고 머그컵', 12000, 'images/mug.svg', '매일 쓰기 좋은 머그컵'),
+  ('에코백', 15000, 'images/bag.svg', '튼튼한 캔버스 에코백'),
+  ('스티커 세트', 3000, 'images/sticker.svg', '노트북에 붙이기 좋은 스티커 6종'),
+  ('반팔 티셔츠', 25000, 'images/tshirt.svg', '면 100% 반팔 티셔츠')
 ) as v(name, price, image_url, description)
 where not exists (select 1 from products);
