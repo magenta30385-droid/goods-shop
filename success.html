@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>결제 확인 - 굿즈샵</title>
+  <link rel="stylesheet" href="css/style.css">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
+  <script src="js/config.js"></script>
+  <script src="js/common.js"></script>
+</head>
+<body>
+  <nav id="nav"></nav>
+  <div class="box">
+    <h1 id="title">결제 확인 중...</h1>
+    <p id="detail"></p>
+    <a href="orders.html">내 결제 내역 보기 →</a>
+  </div>
+
+  <script>
+    // 토스가 주소 뒤에 paymentKey, orderId, amount 를 붙여서 보내줌
+    async function confirmPayment() {
+      await requireLogin();
+      const q = new URLSearchParams(location.search);
+      const { data, error } = await sb.functions.invoke("confirm-payment", {
+        body: { paymentKey: q.get("paymentKey"), orderId: q.get("orderId"), amount: q.get("amount") },
+      });
+
+      if (error) {
+        let msg = error.message;
+        try { msg = (await error.context.json()).message; } catch (e) {}
+        document.getElementById("title").textContent = "결제 승인 실패";
+        document.getElementById("detail").textContent = msg;
+        return;
+      }
+      document.getElementById("title").textContent = "결제가 완료되었습니다!";
+      document.getElementById("detail").textContent =
+        `${data.order.product_name} · ${won(data.order.amount)}`;
+    }
+
+    renderNav();
+    confirmPayment();
+  </script>
+</body>
+</html>

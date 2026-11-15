@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>결제 실패 - 굿즈샵</title>
+  <link rel="stylesheet" href="css/style.css">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
+  <script src="js/config.js"></script>
+  <script src="js/common.js"></script>
+</head>
+<body>
+  <nav id="nav"></nav>
+  <div class="box">
+    <h1>결제에 실패했습니다</h1>
+    <p id="detail"></p>
+    <a href="index.html">상품 목록으로 돌아가기 →</a>
+  </div>
+
+  <script>
+    // 토스가 주소 뒤에 code, message 를 붙여서 보내줌
+    const q = new URLSearchParams(location.search);
+    document.getElementById("detail").textContent = q.get("message") || "";
+    renderNav();
+  </script>
+</body>
+</html>

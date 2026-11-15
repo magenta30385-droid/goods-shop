@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>관리자 - 굿즈샵</title>
+  <link rel="stylesheet" href="css/style.css">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
+  <script src="js/config.js"></script>
+  <script src="js/common.js"></script>
+</head>
+<body>
+  <nav id="nav"></nav>
+  <main>
+    <h1>관리자 - 전체 결제 내역</h1>
+    <div class="table-wrap" id="list">불러오는 중...</div>
+  </main>
+
+  <script>
+    async function load() {
+      const user = await requireLogin();
+      if (!user) return;
+      const box = document.getElementById("list");
+      if (!isAdmin(user)) { box.innerHTML = '<p style="padding:16px">관리자만 볼 수 있는 페이지입니다.</p>'; return; }
+
+      // 관리자는 DB 보안 규칙에 의해 모든 주문을 볼 수 있음
+      const { data, error } = await sb.from("orders").select("*").order("created_at", { ascending: false });
+      if (error) { box.textContent = "불러오지 못했습니다."; return; }
+      if (data.length === 0) { box.innerHTML = '<p style="padding:16px">주문이 없습니다.</p>'; return; }
+
+      box.innerHTML = `<table>
+        <tr><th>날짜</th><th>주문자</th><th>상품</th><th>금액</th><th>상태</th><th>주문번호</th></tr>
+        ${data.map(o => `<tr>
+          <td>${new Date(o.created_at).toLocaleString("ko-KR")}</td>
+          <td>${o.user_email}</td>
+          <td>${o.product_name}</td>
+          <td>${won(o.amount)}</td>
+          <td class="${o.status === "PAID" ? "paid" : "pending"}">${statusText(o.status)}</td>
+          <td>${o.order_id}</td>
+        </tr>`).join("")}
+      </table>`;
+    }
+
+    renderNav();
+    load();
+  </script>
+</body>
+</html>

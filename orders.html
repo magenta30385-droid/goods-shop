@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>내 결제 내역 - 굿즈샵</title>
+  <link rel="stylesheet" href="css/style.css">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
+  <script src="js/config.js"></script>
+  <script src="js/common.js"></script>
+</head>
+<body>
+  <nav id="nav"></nav>
+  <main>
+    <h1>내 결제 내역</h1>
+    <div class="table-wrap" id="list">불러오는 중...</div>
+  </main>
+
+  <script>
+    async function load() {
+      const user = await requireLogin();
+      if (!user) return;
+
+      const { data, error } = await sb.from("orders").select("*")
+        .eq("user_id", user.id).order("created_at", { ascending: false });
+      const box = document.getElementById("list");
+      if (error) { box.textContent = "불러오지 못했습니다."; return; }
+      if (data.length === 0) { box.innerHTML = '<p style="padding:16px">아직 주문이 없습니다.</p>'; return; }
+
+      box.innerHTML = `<table>
+        <tr><th>날짜</th><th>상품</th><th>금액</th><th>상태</th></tr>
+        ${data.map(o => `<tr>
+          <td>${new Date(o.created_at).toLocaleString("ko-KR")}</td>
+          <td>${o.product_name}</td>
+          <td>${won(o.amount)}</td>
+          <td class="${o.status === "PAID" ? "paid" : "pending"}">${statusText(o.status)}</td>
+        </tr>`).join("")}
+      </table>`;
+    }
+
+    renderNav();
+    load();
+  </script>
+</body>
+</html>

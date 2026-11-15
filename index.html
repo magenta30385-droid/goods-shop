@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>굿즈샵</title>
+  <link rel="stylesheet" href="css/style.css">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
+  <script src="https://js.tosspayments.com/v2/standard"></script>
+  <script src="js/config.js"></script>
+  <script src="js/common.js"></script>
+</head>
+<body>
+  <nav id="nav"></nav>
+  <main>
+    <h1>상품 목록</h1>
+    <div id="products" class="products">불러오는 중...</div>
+  </main>
+
+  <script>
+    async function loadProducts() {
+      const { data, error } = await sb.from("products").select("*").order("id");
+      const box = document.getElementById("products");
+      if (error) { box.textContent = "상품을 불러오지 못했습니다."; return; }
+
+      box.innerHTML = data.map(p => `
+        <div class="card">
+          <img src="${p.image_url}" alt="${p.name}">
+          <div class="body">
+            <h3>${p.name}</h3>
+            <p>${p.description || ""}</p>
+            <div class="price">${won(p.price)}</div>
+            <button onclick="buy(${p.id}, this)">구매하기</button>
+          </div>
+        </div>`).join("");
+    }
+
+    async function buy(productId, btn) {
+      const user = await getUser();
+      if (!user) { location.href = "login.html"; return; }
+
+      btn.disabled = true;
+      // 1) 주문 만들기 (가격은 DB가 자동으로 채움)
+      const orderId = "order_" + Date.now() + "_" + Math.random().toString(36).slice(2, 8);
+      const { data: order, error } = await sb.from("orders")
+        .insert({ product_id: productId, order_id: orderId })
+        .select().single();
+      if (error) { alert("주문 생성 실패: " + error.message); btn.disabled = false; return; }
+
+      // 2) 토스 결제창 열기
+      try {
+        const toss = TossPayments(TOSS_CLIENT_KEY);
+        const payment = toss.payment({ customerKey: user.id });
+        await payment.requestPayment({
+          method: "CARD",
+          amount: { currency: "KRW", value: order.amount },
+          orderId: order.order_id,
+          orderName: order.product_name,
+          customerEmail: user.email,
+          successUrl: new URL("success.html", location.href).href,
+          failUrl: new URL("fail.html", location.href).href,
+        });
+      } catch (e) {
+        // 사용자가 결제창을 닫은 경우 등
+        alert(e.message);
+        btn.disabled = false;
+      }
+    }
+
+    renderNav();
+    loadProducts();
+  </script>
+</body>
+</html>
