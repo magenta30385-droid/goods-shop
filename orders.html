@@ -32,7 +32,7 @@
         <tr><th>날짜</th><th>상품</th><th>금액</th><th>상태</th></tr>
         ${data.map(o => `<tr>
           <td data-label="날짜">${new Date(o.created_at).toLocaleString("ko-KR")}</td>
-          <td data-label="상품">${o.product_name}</td>
+          <td data-label="상품">${esc(o.product_name)}</td>
           <td data-label="금액">${won(o.amount)}</td>
           <td data-label="상태" class="${o.status === "PAID" ? "paid" : "pending"}">${statusText(o.status)}</td>
         </tr>`).join("")}

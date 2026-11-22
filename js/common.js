@@ -18,6 +18,12 @@ function isAdmin(user) {
   return !!user && user.email === ADMIN_EMAIL;
 }
 
+// 화면에 그릴 글자 안의 <, >, ", ', & 를 안전한 글자로 바꿈 (스크립트 끼워넣기 방지)
+function esc(s) {
+  return String(s ?? "").replace(/[&<>"']/g, (c) =>
+    ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]);
+}
+
 // 12000 → "12,000원"
 function won(n) {
   return Number(n).toLocaleString("ko-KR") + "원";
@@ -34,7 +40,7 @@ async function renderNav() {
   if (user) {
     html += '<a href="orders.html">내 결제 내역</a>';
     if (isAdmin(user)) html += '<a href="admin.html">관리자</a>';
-    html += `<span class="email">${user.email}</span><a href="#" id="logout">로그아웃</a>`;
+    html += `<span class="email">${esc(user.email)}</span><a href="#" id="logout">로그아웃</a>`;
   } else {
     html += '<a href="login.html">로그인 / 회원가입</a>';
   }
