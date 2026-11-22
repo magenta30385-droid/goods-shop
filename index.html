@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <link rel="icon" href="data:,">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>굿즈샵</title>
+  <title>포근 — 잠과 침구</title>
   <link rel="stylesheet" href="css/style.css">
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
   <script src="https://js.tosspayments.com/v2/standard"></script>
@@ -14,9 +14,34 @@
 <body>
   <nav id="nav"></nav>
   <main>
-    <h1>상품 목록</h1>
+    <header class="hero">
+      <h1>매일의 잠을<br>포근하게</h1>
+      <div class="rule"></div>
+      <p>순면 누빔부터 방수 커버까지, 오래 덮고 싶은 침구를 모았습니다.</p>
+    </header>
+
+    <div class="trust">
+      <span>토스 테스트 결제</span>
+      <span>실제 청구 없음</span>
+      <span>가입 즉시 구매</span>
+    </div>
+
+    <div class="catalog-head">
+      <h2>전체 상품</h2>
+      <span class="count" id="count"></span>
+    </div>
     <div id="products" class="products">불러오는 중...</div>
   </main>
+
+  <footer class="foot">
+    <div class="foot-brand">포근</div>
+    <p>잠과 침구를 위한 작은 상점입니다. 토스 테스트 모드로 운영되어 실제 결제가 일어나지 않습니다.</p>
+    <nav class="foot-links">
+      <a href="login.html">로그인 · 회원가입</a>
+      <a href="orders.html">내 결제 내역</a>
+    </nav>
+    <small>© 2026 포근</small>
+  </footer>
 
   <!-- 결제 화면: 구매하기를 누르면 나타남 -->
   <div id="pay" class="pay" hidden>
@@ -36,16 +61,19 @@
       const box = document.getElementById("products");
       if (error) { box.textContent = "상품을 불러오지 못했습니다."; return; }
 
+      document.getElementById("count").textContent = `${data.length}개`;
       box.innerHTML = data.map(p => `
-        <div class="card">
-          <img src="${esc(p.image_url)}" alt="${esc(p.name)}" loading="lazy" referrerpolicy="no-referrer">
+        <article class="card">
+          <div class="thumb">
+            <img src="${esc(p.image_url)}" alt="${esc(p.name)}" loading="lazy" referrerpolicy="no-referrer">
+            <button class="buy" onclick="buy(${p.id}, this)">구매하기</button>
+          </div>
           <div class="body">
             <h3>${esc(p.name)}</h3>
             <p>${esc(p.description)}</p>
             <div class="price">${won(p.price)}</div>
-            <button onclick="buy(${p.id}, this)">구매하기</button>
           </div>
-        </div>`).join("");
+        </article>`).join("");
     }
 
     async function buy(productId, btn) {

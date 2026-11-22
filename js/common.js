@@ -36,7 +36,7 @@ function statusText(s) {
 // 상단 메뉴 그리기
 async function renderNav() {
   const user = await getUser();
-  let html = '<a href="index.html" class="logo">굿즈샵</a><span class="menu">';
+  let html = '<a href="index.html" class="logo">포근</a><span class="menu">';
   if (user) {
     html += '<a href="orders.html">내 결제 내역</a>';
     if (isAdmin(user)) html += '<a href="admin.html">관리자</a>';
