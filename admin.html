@@ -32,12 +32,12 @@
       box.innerHTML = `<table>
         <tr><th>날짜</th><th>주문자</th><th>상품</th><th>금액</th><th>상태</th><th>주문번호</th></tr>
         ${data.map(o => `<tr>
-          <td>${new Date(o.created_at).toLocaleString("ko-KR")}</td>
-          <td>${o.user_email}</td>
-          <td>${o.product_name}</td>
-          <td>${won(o.amount)}</td>
-          <td class="${o.status === "PAID" ? "paid" : "pending"}">${statusText(o.status)}</td>
-          <td>${o.order_id}</td>
+          <td data-label="날짜">${new Date(o.created_at).toLocaleString("ko-KR")}</td>
+          <td data-label="주문자">${o.user_email}</td>
+          <td data-label="상품">${o.product_name}</td>
+          <td data-label="금액">${won(o.amount)}</td>
+          <td data-label="상태" class="${o.status === "PAID" ? "paid" : "pending"}">${statusText(o.status)}</td>
+          <td data-label="주문번호">${o.order_id}</td>
         </tr>`).join("")}
       </table>`;
     }
