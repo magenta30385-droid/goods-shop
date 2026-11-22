@@ -61,6 +61,15 @@ td::before { content: attr(data-label); color: #888; text-align: left; white-spa
 .paid { color: #1a8a3a; font-weight: 600; }
 .pending { color: #c77700; font-weight: 600; }
 
+/* 결제 화면: 폰에서는 화면 전체, 태블릿 이상은 가운데 상자 */
+.pay { position: fixed; inset: 0; z-index: 20; background: rgba(0,0,0,.45); overflow-y: auto; }
+.pay[hidden] { display: none; }
+.pay-box { background: #fff; min-height: 100%; padding: 20px 16px 32px; }
+.pay-box h2 { margin: 0 0 4px; font-size: 18px; line-height: 1.4; }
+.pay-box .price { font-weight: 700; font-size: 20px; margin-bottom: 8px; }
+.pay-box button { margin-top: 10px; }
+button.secondary { background: #e6e6ea; color: #333; }
+
 /* 태블릿 */
 @media (min-width: 600px) {
   main { padding: 24px 20px 40px; }
@@ -71,6 +80,7 @@ td::before { content: attr(data-label); color: #888; text-align: left; white-spa
   .box { margin: 48px auto; padding: 28px; }
   #nav { padding: 8px 20px; }
   #nav .email { max-width: 220px; }
+  .pay-box { max-width: 560px; min-height: 0; margin: 40px auto; border-radius: 12px; padding: 28px; }
 
   /* 일반 표로 표시 */
   .table-wrap { background: #fff; border-radius: 12px; overflow-x: auto; }

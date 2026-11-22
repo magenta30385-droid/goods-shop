@@ -18,6 +18,18 @@
     <div id="products" class="products">불러오는 중...</div>
   </main>
 
+  <!-- 결제 화면: 구매하기를 누르면 나타남 -->
+  <div id="pay" class="pay" hidden>
+    <div class="pay-box">
+      <h2 id="pay-title"></h2>
+      <div class="price" id="pay-amount"></div>
+      <div id="payment-method"></div>
+      <div id="agreement"></div>
+      <button id="pay-btn">결제하기</button>
+      <button id="pay-cancel" class="secondary">취소</button>
+    </div>
+  </div>
+
   <script>
     async function loadProducts() {
       const { data, error } = await sb.from("products").select("*").order("id");
@@ -48,25 +60,41 @@
         .select().single();
       if (error) { alert("주문 생성 실패: " + error.message); btn.disabled = false; return; }
 
-      // 2) 토스 결제창 열기
+      // 2) 결제 화면에 토스 결제위젯 그리기 (금액 = DB에 저장된 금액)
       try {
-        const toss = TossPayments(TOSS_CLIENT_KEY);
-        const payment = toss.payment({ customerKey: user.id });
-        await payment.requestPayment({
-          method: "CARD",
-          amount: { currency: "KRW", value: order.amount },
-          orderId: order.order_id,
-          orderName: order.product_name,
-          customerEmail: user.email,
-          successUrl: new URL("success.html", location.href).href,
-          failUrl: new URL("fail.html", location.href).href,
-        });
+        document.getElementById("pay-title").textContent = order.product_name;
+        document.getElementById("pay-amount").textContent = won(order.amount);
+        document.getElementById("pay").hidden = false;
+
+        const widgets = TossPayments(TOSS_CLIENT_KEY).widgets({ customerKey: user.id });
+        await widgets.setAmount({ currency: "KRW", value: order.amount });
+        await Promise.all([
+          widgets.renderPaymentMethods({ selector: "#payment-method", variantKey: "DEFAULT" }),
+          widgets.renderAgreement({ selector: "#agreement", variantKey: "AGREEMENT" }),
+        ]);
+
+        // 3) 결제하기 → 토스 결제 진행 → 성공 시 success.html 로 이동
+        document.getElementById("pay-btn").onclick = async () => {
+          try {
+            await widgets.requestPayment({
+              orderId: order.order_id,
+              orderName: order.product_name,
+              customerEmail: user.email,
+              successUrl: new URL("success.html", location.href).href,
+              failUrl: new URL("fail.html", location.href).href,
+            });
+          } catch (e) {
+            alert(e.message); // 사용자가 결제를 취소한 경우 등
+          }
+        };
       } catch (e) {
-        // 사용자가 결제창을 닫은 경우 등
-        alert(e.message);
-        btn.disabled = false;
+        alert("결제 화면을 불러오지 못했습니다: " + e.message);
+        location.reload();
       }
     }
+
+    // 취소: 페이지를 새로 불러와 결제 화면을 닫음
+    document.getElementById("pay-cancel").onclick = () => location.reload();
 
     renderNav();
     loadProducts();
